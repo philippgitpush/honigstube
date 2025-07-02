@@ -1,0 +1,11 @@
+main: com.philippgitpush.Main
+name: Honigstube
+description: Honigstube
+author: philippgitpush
+website: philipp.sh
+version: '1.0.0'
+api-version: '1.21.6'
+commands:
+  bed:
+    description: Teleportiert dich zu deinem Bett.
+    usage: /bed
