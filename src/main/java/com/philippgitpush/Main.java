@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.philippgitpush.commands.BedCommand;
 import com.philippgitpush.listeners.BlockBreakListener;
+import com.philippgitpush.listeners.ProjectileHitListener;
 
 public class Main extends JavaPlugin {
 
@@ -14,6 +15,7 @@ public class Main extends JavaPlugin {
 
     // Register Listeners
     getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
+    getServer().getPluginManager().registerEvents(new ProjectileHitListener(), this);
 
     // Register Commands
     getCommand("bed").setExecutor(new BedCommand());
