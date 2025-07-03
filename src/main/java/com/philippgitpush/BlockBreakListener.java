@@ -1,14 +1,7 @@
 package com.philippgitpush;
 
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,43 +9,70 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class BlockBreakListener implements Listener {
 
   @EventHandler
   public void onBlockBreak(BlockBreakEvent event) {
-      checkForTimber(event);
+    checkForTimber(event);
+  }
+
+  private boolean isLog(Block block) {
+    Set<Material> CUSTOM_LOGS = Set.of(
+        Material.MANGROVE_ROOTS
+    );
+
+    return Tag.LOGS.isTagged(block.getType()) || CUSTOM_LOGS.contains(block.getType());
+  }
+
+  private boolean isLeaf(Block block) {
+    Set<Material> CUSTOM_LEAVES = Set.of(
+        Material.NETHER_WART_BLOCK,
+        Material.WARPED_WART_BLOCK,
+        Material.SHROOMLIGHT,
+        Material.MOSS_CARPET,
+        Material.VINE
+    );
+    
+    return Tag.LEAVES.isTagged(block.getType()) || CUSTOM_LEAVES.contains(block.getType());
   }
 
   public void checkForTimber(BlockBreakEvent event) {
     Player player = event.getPlayer();
     Block startBlock = event.getBlock();
 
-    // Require sneaking
     if (!player.isSneaking()) return;
-
-    // Require player holding an axe
     ItemStack tool = player.getInventory().getItemInMainHand();
     if (tool == null || !Tag.ITEMS_AXES.isTagged(tool.getType())) return;
 
-    // Require the block to be a LOG
-    if (!Tag.LOGS.isTagged(startBlock.getType())) return;
+    if (!isLog(startBlock)) return;
 
     Set<Material> allowedSoilBlocks = Set.of(
-        Material.GRASS_BLOCK,
-        Material.DIRT,
-        Material.COARSE_DIRT,
-        Material.PODZOL,
-        Material.FARMLAND,
-        Material.MYCELIUM
+      Material.GRASS_BLOCK,
+      Material.DIRT,
+      Material.COARSE_DIRT,
+      Material.PODZOL,
+      Material.FARMLAND,
+      Material.MYCELIUM,
+      Material.NETHERRACK,
+      Material.CRIMSON_NYLIUM,
+      Material.WARPED_NYLIUM,
+      Material.MUDDY_MANGROVE_ROOTS,
+      Material.MUD
     );
 
-    // Return if block below isn't from known grass type
     Block below = startBlock.getLocation().add(0, -1, 0).getBlock();
     if (!allowedSoilBlocks.contains(below.getType())) return;
 
@@ -62,48 +82,94 @@ public class BlockBreakListener implements Listener {
     List<Block> targetLogs = new ArrayList<>();
     List<Block> targetLeaves = new ArrayList<>();
 
-    final int maxLeaves = 50;
+    final int maxLeaves = 150;
     int leafCount = 0;
 
+    List<int[]> directions = Arrays.asList(
+      // Current layer
+      new int[] { 1, 0, 0 },
+      new int[] { 1, 0, 1 },
+      new int[] { 0, 0, 1 },
+      new int[] { -1, 0, 1 },
+      new int[] { -1, 0, 0 },
+      new int[] { -1, 0, -1 },
+      new int[] { 0, 0, -1 },
+      new int[] { 1, 0, -1 },
+      // Layer above
+      new int[] { 1, 1, 0 },
+      new int[] { 1, 1, 1 },
+      new int[] { 0, 1, 1 },
+      new int[] { -1, 1, 1 },
+      new int[] { -1, 1, 0 },
+      new int[] { -1, 1, -1 },
+      new int[] { 0, 1, -1 },
+      new int[] { 1, 1, -1 },
+      new int[] { 0, 1, 0 } // Middle
+    );
+
+    // Phase 1: Logs
     toVisit.add(startBlock);
     visited.add(startBlock);
 
-    List<int[]> directions = new ArrayList<>();
+    while (!toVisit.isEmpty()) {
+      Block current = toVisit.poll();
 
-    for (int x = -1; x <= 1; x++) {
-      for (int y = -1; y <= 1; y++) {
-        for (int z = -1; z <= 1; z++) {
-          if (x == 0 && y == 0 && z == 0) continue; // skip the block itself
-          directions.add(new int[]{x, y, z});
+      if (!isLog(current)) continue;
+      targetLogs.add(current);
+
+      for (int[] dir : directions) {
+        Location neighborLoc = current.getLocation().clone().add(dir[0], dir[1], dir[2]);
+        Block neighbor = neighborLoc.getBlock();
+
+        if (visited.contains(neighbor)) continue;
+        if (!isLog(neighbor)) continue;
+
+        visited.add(neighbor);
+        toVisit.add(neighbor);
+      }
+    }
+
+    if (targetLogs.isEmpty()) return;
+
+    // Phase 2: Leaves around logs
+    Queue<Block> leavesToExpand = new LinkedList<>();
+    for (Block log : targetLogs) {
+      for (int[] dir : directions) {
+        Location leafLoc = log.getLocation().clone().add(dir[0], dir[1], dir[2]);
+        Block neighbor = leafLoc.getBlock();
+
+        if (visited.contains(neighbor)) continue;
+
+        if (isLeaf(neighbor)) {
+          if (leafCount >= maxLeaves) continue;
+          targetLeaves.add(neighbor);
+          leavesToExpand.add(neighbor);
+          leafCount++;
+          visited.add(neighbor);
         }
       }
     }
 
-    while (!toVisit.isEmpty()) {
-        Block current = toVisit.poll();
+    // Phase 3: One expansion from leaves
+    while (!leavesToExpand.isEmpty()) {
+      Block leaf = leavesToExpand.poll();
 
-        if (Tag.LOGS.isTagged(current.getType())) {
-            targetLogs.add(current);
-        } else if (Tag.LEAVES.isTagged(current.getType())) {
-            if (leafCount >= maxLeaves) continue;
-            targetLeaves.add(current);
-            leafCount++;
-        } else {
-            continue;
-        }
+      for (int[] dir : directions) {
+        Location neighborLoc = leaf.getLocation().clone().add(dir[0], dir[1], dir[2]);
+        Block neighbor = neighborLoc.getBlock();
 
-        for (int[] dir : directions) {
-            Block neighbor = current.getLocation().add(dir[0], dir[1], dir[2]).getBlock();
-            if (!visited.contains(neighbor) &&
-                (Tag.LOGS.isTagged(neighbor.getType()) || Tag.LEAVES.isTagged(neighbor.getType()))) {
-                visited.add(neighbor);
-                toVisit.add(neighbor);
-            }
+        if (visited.contains(neighbor)) continue;
+
+        if (isLeaf(neighbor)) {
+          if (leafCount >= maxLeaves) continue;
+          targetLeaves.add(neighbor);
+          leafCount++;
+          visited.add(neighbor);
         }
+      }
     }
 
-    // Return if no leaves are found
-    if (targetLeaves.size() == 0) return;
+    if (targetLeaves.isEmpty()) return;
 
     for (Block log : targetLogs) log.breakNaturally();
     for (Block leaf : targetLeaves) leaf.breakNaturally();
@@ -133,6 +199,6 @@ public class BlockBreakListener implements Listener {
     int currentDamage = damageable.getDamage();
     damageable.setDamage(currentDamage + damageToApply);
     item.setItemMeta(meta);
-}
+  }
 
 }
