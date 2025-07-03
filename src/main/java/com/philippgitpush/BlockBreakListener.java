@@ -53,10 +53,14 @@ public class BlockBreakListener implements Listener {
     Player player = event.getPlayer();
     Block startBlock = event.getBlock();
 
+    // Return if player is not sneaking
     if (!player.isSneaking()) return;
+
+    // Return if player isn't holding an axe
     ItemStack tool = player.getInventory().getItemInMainHand();
     if (tool == null || !Tag.ITEMS_AXES.isTagged(tool.getType())) return;
 
+    // Return if not a log
     if (!isLog(startBlock)) return;
 
     Set<Material> allowedSoilBlocks = Set.of(
@@ -73,6 +77,7 @@ public class BlockBreakListener implements Listener {
       Material.MUD
     );
 
+    // Return if soil block isn't listed
     Block below = startBlock.getLocation().add(0, -1, 0).getBlock();
     if (!allowedSoilBlocks.contains(below.getType())) return;
 
@@ -85,6 +90,7 @@ public class BlockBreakListener implements Listener {
     final int maxLeaves = 150;
     int leafCount = 0;
 
+    // Direction map
     List<int[]> directions = Arrays.asList(
       // Current layer
       new int[] { 1, 0, 0 },
@@ -169,6 +175,7 @@ public class BlockBreakListener implements Listener {
       }
     }
 
+    // Return if its just logs
     if (targetLeaves.isEmpty()) return;
 
     for (Block log : targetLogs) log.breakNaturally();
