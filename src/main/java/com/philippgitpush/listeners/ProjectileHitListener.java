@@ -1,8 +1,5 @@
 package com.philippgitpush.listeners;
 
-import java.util.Random;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
