@@ -1,4 +1,4 @@
-package com.philippgitpush;
+package com.philippgitpush.listeners;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -178,8 +180,17 @@ public class BlockBreakListener implements Listener {
     // Return if its just logs
     if (targetLeaves.isEmpty()) return;
 
-    for (Block log : targetLogs) log.breakNaturally();
-    for (Block leaf : targetLeaves) leaf.breakNaturally();
+    for (Block log : targetLogs) {
+      log.getWorld().spawnParticle(Particle.CLOUD, log.getLocation(), 2, 1, 1, 1, 0.1);
+      log.breakNaturally();
+    } 
+    for (Block leaf : targetLeaves) {
+      leaf.getWorld().spawnParticle(Particle.CLOUD, leaf.getLocation(), 2, 1, 1, 1, 0.1);
+      leaf.breakNaturally();
+    }
+
+    startBlock.getWorld().playSound(startBlock.getLocation(), Sound.BLOCK_WOOD_BREAK, 1, new Random().nextFloat());
+    startBlock.getWorld().playSound(startBlock.getLocation(), Sound.BLOCK_VINE_BREAK, 1, new Random().nextFloat());
 
     damageHeldItem(player, targetLogs.size());
   }
