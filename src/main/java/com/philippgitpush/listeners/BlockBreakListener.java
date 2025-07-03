@@ -69,6 +69,7 @@ public class BlockBreakListener implements Listener {
       Material.GRASS_BLOCK,
       Material.DIRT,
       Material.COARSE_DIRT,
+      Material.ROOTED_DIRT,
       Material.PODZOL,
       Material.FARMLAND,
       Material.MYCELIUM,
