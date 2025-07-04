@@ -53,6 +53,5 @@ public class ProjectileHitListener implements Listener {
 
     return egg;
   }
-
-
+  
 }
