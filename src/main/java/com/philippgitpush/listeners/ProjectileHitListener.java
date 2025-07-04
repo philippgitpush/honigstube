@@ -3,6 +3,7 @@ package com.philippgitpush.listeners;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,23 +11,33 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
-public class ProjectileHitListener implements Listener {
+import com.philippgitpush.util.EggHatchUtil;
 
+public class ProjectileHitListener implements Listener {
+  
   @EventHandler
   public void onProjectileHit(ProjectileHitEvent event) {
 
     // Return if not an egg
     if (event.getEntity().getType() != EntityType.EGG) return;
 
-    // Return if there is no hit entity
-    if (event.getHitEntity() == null) return;
+    // Return if there is no hit entity, allow chicken hatching
+    if (event.getHitEntity() == null) {
+      Egg egg = (Egg) event.getEntity();
+      EggHatchUtil.handleEggHatch(event.getEntity().getLocation().getBlock().getLocation().add(0.5, 0.5, 0.5), egg.getItem().getType());
+      
+      return;
+    }
 
     // Return if no matching spawn egg
     ItemStack egg = getSpawnEgg(event.getHitEntity().getType());
     if (egg.getType() == Material.EGG) return;
 
+    // Return if hit entity is ENDER_DRAGON
+    if (event.getHitEntity().getType() == EntityType.ENDER_DRAGON);
+
     // Drop the egg
-    event.getHitEntity().getWorld().dropItemNaturally(event.getHitEntity().getLocation(), egg);
+    event.getHitEntity().getWorld().dropItemNaturally(event.getHitEntity().getLocation().add(0, 0.5, 0), egg);
 
     // Remove the entity, cleanup
     event.getHitEntity().remove();
