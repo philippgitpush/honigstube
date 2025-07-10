@@ -65,6 +65,7 @@ public class BackpackListener implements Listener {
   public void onInventoryClose(InventoryCloseEvent event) {
     // Return if not custom shulker box
     if (!event.getInventory().getType().equals(InventoryType.SHULKER_BOX)) return;
+    if (event.getInventory().getHolder() == null) return;
     if (!event.getInventory().getHolder().equals(event.getPlayer())) return;
 
     Player player = (Player) event.getPlayer();
