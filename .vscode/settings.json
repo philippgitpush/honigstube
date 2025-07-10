@@ -2,5 +2,6 @@
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.import.gradle.enabled": true,
   "java.import.gradle.wrapper.enabled": true,
-  "java.import.gradle.offline.enabled": false
+  "java.import.gradle.offline.enabled": false,
+  "java.compile.nullAnalysis.mode": "automatic"
 }

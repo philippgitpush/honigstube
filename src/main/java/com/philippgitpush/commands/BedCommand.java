@@ -39,4 +39,5 @@ public class BedCommand implements CommandExecutor {
 
     return true;
   }
+  
 }

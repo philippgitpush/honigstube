@@ -24,34 +24,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class BlockBreakListener implements Listener {
+public class TimberListener implements Listener {
 
   @EventHandler
   public void onBlockBreak(BlockBreakEvent event) {
-    checkForTimber(event);
-  }
-
-  private boolean isLog(Block block) {
-    Set<Material> CUSTOM_LOGS = Set.of(
-        Material.MANGROVE_ROOTS
-    );
-
-    return Tag.LOGS.isTagged(block.getType()) || CUSTOM_LOGS.contains(block.getType());
-  }
-
-  private boolean isLeaf(Block block) {
-    Set<Material> CUSTOM_LEAVES = Set.of(
-        Material.NETHER_WART_BLOCK,
-        Material.WARPED_WART_BLOCK,
-        Material.SHROOMLIGHT,
-        Material.MOSS_CARPET,
-        Material.VINE
-    );
-    
-    return Tag.LEAVES.isTagged(block.getType()) || CUSTOM_LEAVES.contains(block.getType());
-  }
-
-  public void checkForTimber(BlockBreakEvent event) {
     Player player = event.getPlayer();
     Block startBlock = event.getBlock();
 
@@ -196,7 +172,27 @@ public class BlockBreakListener implements Listener {
     damageHeldItem(player, targetLogs.size());
   }
 
-  public void damageHeldItem(Player player, int damageAmount) {
+  private boolean isLog(Block block) {
+    Set<Material> CUSTOM_LOGS = Set.of(
+        Material.MANGROVE_ROOTS
+    );
+
+    return Tag.LOGS.isTagged(block.getType()) || CUSTOM_LOGS.contains(block.getType());
+  }
+
+  private boolean isLeaf(Block block) {
+    Set<Material> CUSTOM_LEAVES = Set.of(
+        Material.NETHER_WART_BLOCK,
+        Material.WARPED_WART_BLOCK,
+        Material.SHROOMLIGHT,
+        Material.MOSS_CARPET,
+        Material.VINE
+    );
+    
+    return Tag.LEAVES.isTagged(block.getType()) || CUSTOM_LEAVES.contains(block.getType());
+  }
+
+  private void damageHeldItem(Player player, int damageAmount) {
     ItemStack item = player.getInventory().getItemInMainHand();
 
     // Return if player isn't holding an item

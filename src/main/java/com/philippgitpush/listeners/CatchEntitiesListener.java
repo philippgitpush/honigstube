@@ -1,30 +1,36 @@
 package com.philippgitpush.listeners;
 
+import java.util.Random;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.entity.Chicken;
+import org.bukkit.entity.Chicken.Variant;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
-import com.philippgitpush.util.EggHatchUtil;
-
-public class ProjectileHitListener implements Listener {
+public class CatchEntitiesListener implements Listener {
   
+  private static final Random RANDOM = new Random();
+
   @EventHandler
   public void onProjectileHit(ProjectileHitEvent event) {
-
     // Return if not an egg
     if (event.getEntity().getType() != EntityType.EGG) return;
 
     // Return if there is no hit entity, allow chicken hatching
     if (event.getHitEntity() == null) {
       Egg egg = (Egg) event.getEntity();
-      EggHatchUtil.handleEggHatch(event.getEntity().getLocation().getBlock().getLocation().add(0.5, 0.5, 0.5), egg.getItem().getType());
+      handleEggHatch(event.getEntity().getLocation().getBlock().getLocation().add(0.5, 0.5, 0.5), egg.getItem().getType());
       
       return;
     }
@@ -48,7 +54,12 @@ public class ProjectileHitListener implements Listener {
     event.getHitEntity().getWorld().playSound(event.getHitEntity().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0);
   }
 
-  public static ItemStack getSpawnEgg(EntityType type) {
+  @EventHandler
+  public void onPlayerEggThrow(PlayerEggThrowEvent event) {
+    event.setHatching(false);
+  }
+
+  private ItemStack getSpawnEgg(EntityType type) {
     if (type == null) return new ItemStack(Material.EGG);
 
     Material eggMaterial;
@@ -65,4 +76,27 @@ public class ProjectileHitListener implements Listener {
     return egg;
   }
   
+  private void handleEggHatch(Location location, Material material) {
+    if (RANDOM.nextInt(8) == 0) {
+      spawnChicken(location, material);
+
+      if (RANDOM.nextInt(32) == 0) for (int i = 0; i < 3; i++) spawnChicken(location, material);
+    }
+  }
+
+  private void spawnChicken(Location location, Material material) {
+    World world = location.getWorld();
+    if (world == null) return;
+
+    world.spawn(location, Chicken.class, chicken -> {
+      chicken.setBaby();
+
+      switch (material) {
+        case BLUE_EGG -> chicken.setVariant(Variant.COLD);
+        case BROWN_EGG -> chicken.setVariant(Variant.WARM);
+        default -> {}
+      }
+    });
+  }
+
 }
