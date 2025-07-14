@@ -36,6 +36,7 @@ public class SitCommand implements CommandExecutor {
     // Clear any leftover armor stand seats
     for (Entity entity : player.getWorld().getEntities()) {
       if (!(entity instanceof ArmorStand)) continue;
+      if (entity.getCustomName() == null) continue;
       if (entity.getCustomName().equals(player.getUniqueId().toString())) entity.remove();
     }
 

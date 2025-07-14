@@ -18,6 +18,7 @@ public class SitListener implements Listener {
     // Clear any leftover armor stand seats
     for (Entity entity : event.getDismounted().getWorld().getEntities()) {
       if (!(entity instanceof ArmorStand)) continue;
+      if (entity.getCustomName() == null) continue;
       if (entity.getCustomName().equals(event.getEntity().getUniqueId().toString())) entity.remove();
     }
 
