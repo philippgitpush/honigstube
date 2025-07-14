@@ -9,3 +9,6 @@ commands:
   bed:
     description: Teleportiert dich zu deinem Bett.
     usage: /bed
+  sit:
+    description: Setz dich hin.
+    usage: /sit
