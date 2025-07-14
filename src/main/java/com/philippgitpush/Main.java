@@ -21,7 +21,7 @@ public class Main extends JavaPlugin {
     // Register Listeners
     getServer().getPluginManager().registerEvents(new TimberListener(), this);
     getServer().getPluginManager().registerEvents(new CatchEntitiesListener(), this);
-    getServer().getPluginManager().registerEvents(new PiggybackListener(), this);
+    getServer().getPluginManager().registerEvents(new PiggybackListener(this), this);
     getServer().getPluginManager().registerEvents(new BackpackListener(this), this);
     getServer().getPluginManager().registerEvents(new CustomCreaturesListener(), this);
     getServer().getPluginManager().registerEvents(new SitListener(), this);
