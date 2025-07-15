@@ -36,7 +36,8 @@ public class CustomCreaturesListener implements Listener {
   private void spawnChickenCreeper(Entity creeper) {
     if (RANDOM.nextInt(8) != 0) return;
       
-    Entity chicken = creeper.getWorld().spawnEntity(creeper.getLocation(), EntityType.CHICKEN);
+    LivingEntity chicken = (LivingEntity) creeper.getWorld().spawnEntity(creeper.getLocation(), EntityType.CHICKEN);
+    chicken.setRemoveWhenFarAway(true);
     creeper.addPassenger(chicken);
     
     PotionEffect effect = new PotionEffect(PotionEffectType.SLOW_FALLING, Integer.MAX_VALUE, 2);
