@@ -7,7 +7,6 @@ import com.philippgitpush.commands.BedCommand;
 import com.philippgitpush.commands.SitCommand;
 import com.philippgitpush.listeners.TimberListener;
 import com.philippgitpush.listeners.CatchEntitiesListener;
-import com.philippgitpush.listeners.CustomCreaturesListener;
 import com.philippgitpush.listeners.PiggybackListener;
 import com.philippgitpush.listeners.SitListener;
 import com.philippgitpush.listeners.BackpackListener;
@@ -23,7 +22,6 @@ public class Main extends JavaPlugin {
     getServer().getPluginManager().registerEvents(new CatchEntitiesListener(), this);
     getServer().getPluginManager().registerEvents(new PiggybackListener(this), this);
     getServer().getPluginManager().registerEvents(new BackpackListener(this), this);
-    getServer().getPluginManager().registerEvents(new CustomCreaturesListener(), this);
     getServer().getPluginManager().registerEvents(new SitListener(), this);
 
     // Register Commands
