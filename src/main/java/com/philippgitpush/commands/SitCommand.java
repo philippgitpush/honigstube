@@ -1,6 +1,5 @@
 package com.philippgitpush.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Tag;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,12 +9,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import net.kyori.adventure.text.Component;
+
 public class SitCommand implements CommandExecutor {
 
   @Override
   public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     if (!(sender instanceof Player)) {
-      sender.sendMessage(ChatColor.RED + "Nur Spieler können diesen Befehl verwenden.");
+      sender.sendMessage("Nur Spieler können diesen Befehl verwenden.");
       return true;
     }
 
@@ -36,14 +37,14 @@ public class SitCommand implements CommandExecutor {
     // Clear any leftover armor stand seats
     for (Entity entity : player.getWorld().getEntities()) {
       if (!(entity instanceof ArmorStand)) continue;
-      if (entity.getCustomName() == null) continue;
-      if (entity.getCustomName().equals(player.getUniqueId().toString())) entity.remove();
+      if (entity.customName() == null) continue;
+      if (entity.customName().toString().equals(player.getUniqueId().toString())) entity.remove();
     }
 
     // Create seat
     ArmorStand seat = (ArmorStand) player.getWorld().spawnEntity(player.getLocation().add(0, -2, 0), EntityType.ARMOR_STAND);
     seat.setVisible(false);
-    seat.setCustomName(player.getUniqueId().toString());
+    seat.customName(Component.text(player.getUniqueId().toString()));
     seat.setCustomNameVisible(false);
     seat.setInvulnerable(true);
     seat.setGravity(false);

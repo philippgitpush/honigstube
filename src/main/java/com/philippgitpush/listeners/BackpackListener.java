@@ -22,6 +22,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class BackpackListener implements Listener {
 
   private final JavaPlugin plugin;
@@ -50,8 +53,8 @@ public class BackpackListener implements Listener {
     ShulkerBox shulker = (ShulkerBox) shulker_meta.getBlockState();
 
     // Create shulker box inventory
-    String shulker_name = shulker_meta.hasDisplayName() ? shulker_meta.getDisplayName() : "Shulker Box";
-    Inventory shulker_inventory = Bukkit.createInventory(player, InventoryType.SHULKER_BOX, shulker_name);
+    String shulker_name = shulker_meta.hasDisplayName() ? PlainTextComponentSerializer.plainText().serialize(shulker_meta.displayName()) : "Shulker Box";
+    Inventory shulker_inventory = Bukkit.getServer().createInventory(player, InventoryType.SHULKER_BOX, Component.text(shulker_name));
 
     // Fill virtual inventory with shulker box contents
     shulker_inventory.setContents(shulker.getInventory().getContents());

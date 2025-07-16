@@ -3,7 +3,7 @@ name: Honigstube
 description: Honigstube
 author: philippgitpush
 website: philipp.sh
-version: '1.4.2'
+version: '1.5.0'
 api-version: '1.21'
 commands:
   bed:
@@ -12,3 +12,6 @@ commands:
   sit:
     description: Setz dich hin.
     usage: /sit
+  honigstube:
+    description: Test-Befehl für die Plugin-Entwicklung.
+    usage: /honigstube

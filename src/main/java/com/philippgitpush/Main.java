@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.philippgitpush.commands.BedCommand;
 import com.philippgitpush.commands.SitCommand;
+import com.philippgitpush.commands.TestCommand;
 import com.philippgitpush.listeners.TimberListener;
 import com.philippgitpush.listeners.CatchEntitiesListener;
 import com.philippgitpush.listeners.PiggybackListener;
@@ -27,6 +28,7 @@ public class Main extends JavaPlugin {
     // Register Commands
     getCommand("bed").setExecutor(new BedCommand());
     getCommand("sit").setExecutor(new SitCommand());
+    getCommand("honigstube").setExecutor(new TestCommand());
   }
 
   @Override

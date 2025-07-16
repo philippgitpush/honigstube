@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDismountEvent;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class SitListener implements Listener {
 
   @EventHandler
@@ -18,8 +20,8 @@ public class SitListener implements Listener {
     // Clear any leftover armor stand seats
     for (Entity entity : event.getDismounted().getWorld().getEntities()) {
       if (!(entity instanceof ArmorStand)) continue;
-      if (entity.getCustomName() == null) continue;
-      if (entity.getCustomName().equals(event.getEntity().getUniqueId().toString())) entity.remove();
+      if (entity.customName() == null) continue;
+      if (PlainTextComponentSerializer.plainText().serialize(entity.customName()).equals(event.getEntity().getUniqueId().toString())) entity.remove();
     }
 
     // Move player up to avoid falling through blocks below
