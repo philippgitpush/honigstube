@@ -29,7 +29,7 @@ public class DimensionsHopListener implements Listener {
     World destination = Bukkit.getWorld(is_overworld ? "world_the_end" : "world");
 
     // Add effect
-    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 120, 1));
+    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 120 * 20, 0));
 
     // Get current pitch and yaw
     Location location = player.getLocation();
