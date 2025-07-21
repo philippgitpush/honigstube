@@ -3,7 +3,7 @@ name: Honigstube
 description: Honigstube
 author: philippgitpush
 website: philipp.sh
-version: '1.6.1'
+version: '1.6.2'
 api-version: '1.21'
 commands:
   bed:

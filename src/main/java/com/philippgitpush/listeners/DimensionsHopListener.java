@@ -18,15 +18,16 @@ public class DimensionsHopListener implements Listener {
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
-
-    if (player.getLocation().getY() >= -32 && player.getLocation().getY() <= 352) return;
-
-    // Determind environment type
     Environment environment = player.getWorld().getEnvironment();
-    Boolean is_overworld = environment.equals(Environment.NORMAL) ? true : false;
-    Double target_y = (is_overworld) ? 0.0 : 320.0;
+    
+    // Return if location conditions are not met
+    if (environment == Environment.NETHER) return;
+    if (environment == Environment.NORMAL && player.getLocation().getY() < 352) return;
+    if (environment == Environment.THE_END && player.getLocation().getY() > -32) return;
 
-    World destination = Bukkit.getWorld(is_overworld ? "world_the_end" : "world");
+    // Determind destination and target_y
+    Double target_y = (environment == Environment.NORMAL) ? 0.0 : 320.0;
+    World destination = Bukkit.getWorld(environment == Environment.NORMAL ? "world_the_end" : "world");
 
     // Add effect
     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 120 * 20, 0));
@@ -38,14 +39,14 @@ public class DimensionsHopListener implements Listener {
 
     // Play leave sound / effect for nearby players
     player.getWorld().playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 1, 0.5F);
-    player.getWorld().spawnParticle(Particle.DRAGON_BREATH, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
+    player.getWorld().spawnParticle(Particle.DRAGON_BREATH, location.add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
 
     // Teleport player, preserving pitch & yaw
     Location targetLoc = new Location(destination, location.getX(), target_y, location.getZ(), yaw, pitch);
     player.teleport(targetLoc);
 
     // Play appear sound / effect for nearby players
-    player.getWorld().playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 1, 1.5F);
+    player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1.5F);
     player.getWorld().spawnParticle(Particle.DRAGON_BREATH, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
   }
 
