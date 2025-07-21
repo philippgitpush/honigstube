@@ -9,6 +9,7 @@ services:
       VERSION: 1.21.7
       MEMORY: 4G
       JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      MOTD: "\u00a7eHonigst\u00fcbchen\u00a7f (Development)\u00a7r\n\u00a77\u00a7l(\u256f\u00b0\u25a1\u00b0)\u256f\ufe35 \u253b\u2501\u253b"
     ports:
       - "25565:25565" # Minecraft
       - "5005:5005" # Debug
