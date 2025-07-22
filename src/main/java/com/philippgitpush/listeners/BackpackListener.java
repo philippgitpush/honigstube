@@ -30,7 +30,7 @@ public class BackpackListener implements Listener {
   private final JavaPlugin plugin;
 
   public BackpackListener(JavaPlugin plugin) {
-      this.plugin = plugin;
+    this.plugin = plugin;
   }
 
   @EventHandler

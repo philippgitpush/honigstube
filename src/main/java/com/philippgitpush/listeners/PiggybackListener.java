@@ -16,7 +16,7 @@ public class PiggybackListener implements Listener {
   private final JavaPlugin plugin;
 
   public PiggybackListener(JavaPlugin plugin) {
-      this.plugin = plugin;
+    this.plugin = plugin;
   }
 
   @EventHandler

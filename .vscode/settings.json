@@ -1,8 +1,7 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
-  "java.import.gradle.enabled": true,
-  "java.import.gradle.wrapper.enabled": true,
-  "java.import.gradle.offline.enabled": false,
   "java.compile.nullAnalysis.mode": "automatic",
-  "java.debug.settings.hotCodeReplace": "auto"
+  "java.debug.settings.hotCodeReplace": "auto",
+  "java.import.gradle.home": "C:\\Libs\\gradle",
+  "java.import.gradle.wrapper.enabled": false
 }
