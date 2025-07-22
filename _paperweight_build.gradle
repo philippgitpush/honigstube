@@ -1,0 +1,32 @@
+plugins {
+  id "java"
+  id 'io.papermc.paperweight.userdev' version '2.0.0-beta.17'
+}
+
+group = 'com.philippgitpush'
+
+sourceCompatibility = '21'
+targetCompatibility = '21'
+
+repositories {
+  maven {
+    name = "papermc"
+    url = uri("https://repo.papermc.io/repository/maven-public/")
+  }
+}
+
+dependencies {
+  paperweight.paperDevBundle("1.21.7-R0.1-SNAPSHOT")
+}
+
+tasks.assemble {
+  dependsOn(tasks.reobfJar)
+}
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'com.philippgitpush.Main'
+    )
+  }
+}

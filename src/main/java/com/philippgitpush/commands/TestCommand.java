@@ -14,7 +14,7 @@ public class TestCommand implements CommandExecutor {
       return true;
     }
 
-    Player player = (Player) sender;
+    //  Player player = (Player) sender;
 
     return true;
   }
