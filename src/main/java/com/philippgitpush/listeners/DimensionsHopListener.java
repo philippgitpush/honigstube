@@ -39,7 +39,7 @@ public class DimensionsHopListener implements Listener {
 
     // Play leave sound / effect for nearby players
     player.getWorld().playSound(location, Sound.BLOCK_PORTAL_TRAVEL, 1, 0.5F);
-    player.getWorld().spawnParticle(Particle.DRAGON_BREATH, location.add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
+    player.getWorld().spawnParticle(Particle.CLOUD, location.add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
 
     // Teleport player, preserving pitch & yaw
     Location targetLoc = new Location(destination, location.getX(), target_y, location.getZ(), yaw, pitch);
@@ -47,7 +47,7 @@ public class DimensionsHopListener implements Listener {
 
     // Play appear sound / effect for nearby players
     player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 1, 1.5F);
-    player.getWorld().spawnParticle(Particle.DRAGON_BREATH, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
+    player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
   }
 
 }

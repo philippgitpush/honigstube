@@ -1,3 +1,5 @@
+// TODO: Bugfix shulker saving empty inventory if interacting too fast. (Trying to save an inventory that doesn't exist anymore?)
+
 package com.philippgitpush.listeners;
 
 import java.util.Arrays;

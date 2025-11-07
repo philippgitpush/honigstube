@@ -28,13 +28,13 @@ public class BedCommand implements CommandExecutor {
 
     // Effect before
     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 0);
-    player.getWorld().spawnParticle(Particle.DRAGON_BREATH, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
+    player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 2, 0), 20, 0, 0.5, 0, 0.05);
 
     player.teleport(bed);
     
     // Effect afer
     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
-    player.getWorld().spawnParticle(Particle.DRAGON_BREATH, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
+    player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 2, 0), 20, 0, 0.5, 0, 0.05);
 
     return true;
   }
