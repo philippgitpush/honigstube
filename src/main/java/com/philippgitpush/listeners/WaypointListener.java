@@ -85,9 +85,18 @@ public class WaypointListener implements Listener {
 
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
-    if (!event.getInventory().getHolder().equals(WaypointsHolder) || event.getCurrentItem() == null || !(event.getWhoClicked() instanceof Player)) return;
+    // InventoryHolder-Check
+    if (!event.getInventory().getHolder().equals(WaypointsHolder)) return;
+
     event.setCancelled(true);
 
+    // Validation
+    if (event.getCurrentItem() == null) return;
+    if (!(event.getWhoClicked() instanceof Player)) return;
+    if (!Tag.ITEMS_BEDS.isTagged(event.getCurrentItem().getType())) return;
+    if (event.getClickedInventory() == event.getWhoClicked().getInventory()) return;
+
+    // Attempt teleportation
     attemptWaypointTeleport((Player) event.getWhoClicked(), event.getCurrentItem());
   }
 
@@ -294,13 +303,13 @@ public class WaypointListener implements Listener {
 
               if (bed_data.getPart() == Part.HEAD) {
                 Location hint_facing = hint.getLocation().getBlock().getRelative(facing.getOppositeFace()).getLocation();
-                hint_facing.getWorld().spawnParticle(Particle.GLOW, hint_facing.add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
+                player.spawnParticle(Particle.GLOW, hint_facing.add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
               } else {
                 Location hint_facing = hint.getLocation().getBlock().getRelative(facing).getLocation();
-                hint_facing.getWorld().spawnParticle(Particle.GLOW, hint_facing.add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
+                player.spawnParticle(Particle.GLOW, hint_facing.add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
               }
 
-              hint.getLocation().getWorld().spawnParticle(Particle.GLOW, hint.getLocation().add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
+              player.spawnParticle(Particle.GLOW, hint.getLocation().add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
             }
           }
         }
