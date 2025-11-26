@@ -11,7 +11,10 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.Tag;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Bed.Part;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,17 +61,17 @@ public class WaypointListener implements Listener {
   public void onPlayerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
 
+    // Return if player is outside of overworld
+    if (!player.getWorld().getEnvironment().equals(Environment.NORMAL)) return;
+
     // Return if nothing interacting with no item
-    if (player.getInventory().getItemInMainHand() == null)
-      return;
+    if (player.getInventory().getItemInMainHand() == null) return;
 
     // Return if not interacting with compass
-    if (event.getMaterial() != Material.COMPASS)
-      return;
+    if (event.getMaterial() != Material.COMPASS) return;
 
     // Skip left click
-    if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK))
-      return;
+    if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) return;
 
     // Open Waypoint creation if interacting with bed
     if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && Tag.BEDS.isTagged(event.getClickedBlock().getType())) {
@@ -122,7 +125,11 @@ public class WaypointListener implements Listener {
   private void checkForWaypoint(Player player, Location location) {
     WaypointManager waypoints = plugin.getWaypointManager();
 
-    // Open settings dialog if waypoint already exists
+    // Override location for correct bed part
+    org.bukkit.block.data.type.Bed bed_data = (org.bukkit.block.data.type.Bed) location.getBlock().getBlockData();
+    BlockFace facing = bed_data.getFacing();
+    if (bed_data.getPart() == Part.HEAD) location = location.getBlock().getRelative(facing.getOppositeFace()).getLocation();
+
     if (waypoints.getWaypoint(location) != null) {
       openWaypointSettings(player, location);
     } else {
@@ -158,6 +165,17 @@ public class WaypointListener implements Listener {
       PersistentDataType.INTEGER
     );
 
+    // Check level cost
+    if (player.getLevel() < cost) {
+      player.sendActionBar(Component.text("Du hast nicht genug Level für diesen Wegpunkt", NamedTextColor.RED));
+      player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+      player.closeInventory();
+      return;
+    }
+
+    // Apply level cost
+    if (cost > 0) player.setLevel(player.getLevel() - cost);
+
     // Destination location
     Location destination = new Location(Bukkit.getWorld(world), x, y, z);
     destination.setPitch(player.getPitch());
@@ -165,6 +183,7 @@ public class WaypointListener implements Listener {
 
     // Play sound at origin location
     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
+    player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
 
     // Teleport and close inventory
     player.teleport(findSafeLocation(destination, 1));
@@ -172,6 +191,7 @@ public class WaypointListener implements Listener {
 
     // Play sound at destination location
     destination.getWorld().playSound(destination, Sound.ENTITY_PLAYER_TELEPORT, 1, 1);
+    player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation().add(0, 1, 0), 20, 0, 0.5, 0, 0.05);
   }
 
   private void openWaypointCreation(Player player, Location location) {
@@ -189,6 +209,7 @@ public class WaypointListener implements Listener {
 
       WaypointManager waypoints = plugin.getWaypointManager();
       waypoints.createWaypoint(input, player.getUniqueId().toString(), location.getBlock().getType(), location);
+      player.playSound(player.getLocation(), Sound.UI_LOOM_TAKE_RESULT, 1, 1);
     });
   }
 
@@ -213,10 +234,12 @@ public class WaypointListener implements Listener {
           new_name = player.getName() + "'s Bett";
           waypoints.renameWaypoint(waypoint.getId(), new_name);
           openWaypointSettings(player, location);
+          player.getWorld().playSound(player.getLocation(), Sound.UI_LOOM_TAKE_RESULT, 1, 1);
         });
       },
       () -> { // Deletion
         waypoints.deleteWaypoint(waypoint.getId());
+        player.getWorld().playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1, 1);
       }
     );
   }
@@ -228,6 +251,8 @@ public class WaypointListener implements Listener {
     Map<String, WaypointManager.Waypoint> waypoints = waypointManager.getAllWaypoints();
 
     for (WaypointManager.Waypoint waypoint : waypoints.values()) {
+      if (!waypoint.getLocation().getWorld().equals(player.getLocation().getWorld())) continue;
+
       ItemStack item = new ItemStack(waypoint.getMaterial());
       ItemMeta meta = item.getItemMeta();
 
@@ -256,9 +281,6 @@ public class WaypointListener implements Listener {
       @Override
       public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-          if (player.getInventory().getItemInMainHand() == null) continue;
-          if (player.getInventory().getItemInMainHand().getType() != Material.COMPASS) continue;
-
           WaypointManager waypointManager = plugin.getWaypointManager();
           Map<String, WaypointManager.Waypoint> waypoints = waypointManager.getAllWaypoints();
 
@@ -267,6 +289,17 @@ public class WaypointListener implements Listener {
           for (WaypointManager.Waypoint hint : waypoints.values()) {
             if (!hint.getLocation().getWorld().equals(location.getWorld())) continue;
             if (hint.getLocation().distance(location) <= 100) {
+              org.bukkit.block.data.type.Bed bed_data = (org.bukkit.block.data.type.Bed) hint.getLocation().getBlock().getBlockData();
+              BlockFace facing = bed_data.getFacing();
+
+              if (bed_data.getPart() == Part.HEAD) {
+                Location hint_facing = hint.getLocation().getBlock().getRelative(facing.getOppositeFace()).getLocation();
+                hint_facing.getWorld().spawnParticle(Particle.GLOW, hint_facing.add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
+              } else {
+                Location hint_facing = hint.getLocation().getBlock().getRelative(facing).getLocation();
+                hint_facing.getWorld().spawnParticle(Particle.GLOW, hint_facing.add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
+              }
+
               hint.getLocation().getWorld().spawnParticle(Particle.GLOW, hint.getLocation().add(0.5, 1, 0.5), 5, 0.25, 0.25, 0.25, 0);
             }
           }
@@ -320,7 +353,7 @@ public class WaypointListener implements Listener {
       }
     }
 
-    return dest.add(0.5, 0.5, 0.5);
+    return dest.add(0.5, 0.57, 0.5);
   }
 
   private boolean locationIsPlayerSafe(Block feet, Block head, Block above_head) {

@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class YAMLDataManager {
 
+    @SuppressWarnings("unused")
     private final JavaPlugin plugin;
     private File data_file;
     private FileConfiguration data_config;
